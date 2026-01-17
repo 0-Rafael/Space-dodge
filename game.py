@@ -1,169 +1,103 @@
-from random import choice
 from turtle import *
+import random
 
-from freegames import floor, vector
-
-state = {'score': 0}
-path = Turtle(visible=False)
-writer = Turtle(visible=False)
-aim = vector(5, 0)
-pacman = vector(-40, -80)
-ghosts = [
-    [vector(-180, 160), vector(5, 0)],
-    [vector(-180, -160), vector(0, 5)],
-    [vector(100, 160), vector(0, -5)],
-    [vector(100, -160), vector(-5, 0)],
-]
-# fmt: off
-tiles = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
-    0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-]
-# fmt: on
+tilesx = [-150, -100, -50, 0, 50, 100, 150]
+tilesy = [-150, -100, -50, 0, 50, 100, 150]
 
 
-def square(x, y):
-    """Draw square using path at (x, y)."""
-    path.up()
-    path.goto(x, y)
-    path.down()
-    path.begin_fill()
+player = {'ix': 3, 'iy': 1}
 
-    for count in range(4):
-        path.forward(20)
-        path.left(90)
-
-    path.end_fill()
+state = {
+    'score': 0,
+    'posicaox': tilesx[player['ix']],
+    'posicaoy': tilesy[player['iy']]
+}
 
 
-def offset(point):
-    """Return offset of point in tiles."""
-    x = (floor(point.x, 20) + 200) / 20
-    y = (180 - floor(point.y, 20)) / 20
-    index = int(x + y * 20)
-    return index
+setup(width=400, height=400)
+tracer(False)
 
 
-def valid(point):
-    """Return True if point is valid in tiles."""
-    index = offset(point)
 
-    if tiles[index] == 0:
-        return False
-
-    index = offset(point + 19)
-
-    if tiles[index] == 0:
-        return False
-
-    return point.x % 20 == 0 or point.y % 20 == 0
+turtle_player = Turtle()
+turtle_player.shape("square")
+turtle_player.color("black")
+turtle_player.penup()
+turtle_player.speed(0)
+turtle_player.goto(state['posicaox'], state['posicaoy'])
 
 
-def world():
-    """Draw world using path."""
-    bgcolor('black')
-    path.color('blue')
+def move(direcao):
+    if direcao == 'direita' and player['ix'] < len(tilesx) - 1:
+        player['ix'] += 1
+    elif direcao == 'esquerda' and player['ix'] > 0:
+        player['ix'] -= 1
+    elif direcao == 'cima' and player['iy'] < len(tilesy) - 1:
+        player['iy'] += 1
+    elif direcao == 'baixo' and player['iy'] > 0:
+        player['iy'] -= 1
 
-    for index in range(len(tiles)):
-        tile = tiles[index]
+    state['posicaox'] = tilesx[player['ix']]
+    state['posicaoy'] = tilesy[player['iy']]
 
-        if tile > 0:
-            x = (index % 20) * 20 - 200
-            y = 180 - (index // 20) * 20
-            square(x, y)
-
-            if tile == 1:
-                path.up()
-                path.goto(x + 10, y + 10)
-                path.dot(2, 'white')
-
-
-def move():
-    """Move pacman and all ghosts."""
-    writer.undo()
-    writer.write(state['score'])
-
-    clear()
-
-    if valid(pacman + aim):
-        pacman.move(aim)
-
-    index = offset(pacman)
-
-    if tiles[index] == 1:
-        tiles[index] = 2
-        state['score'] += 1
-        x = (index % 20) * 20 - 200
-        y = 180 - (index // 20) * 20
-        square(x, y)
-
-    up()
-    goto(pacman.x + 10, pacman.y + 10)
-    dot(20, 'yellow')
-
-    for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
-        else:
-            options = [
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
-            ]
-            plan = choice(options)
-            course.x = plan.x
-            course.y = plan.y
-
-        up()
-        goto(point.x + 10, point.y + 10)
-        dot(20, 'red')
-
+    turtle_player.goto(state['posicaox'], state['posicaoy'])
     update()
 
-    for point, course in ghosts:
-        if abs(pacman - point) < 20:
+
+listen()
+onkeypress(lambda: move('direita'), 'Right')
+onkeypress(lambda: move('esquerda'), 'Left')
+onkeypress(lambda: move('cima'), 'Up')
+onkeypress(lambda: move('baixo'), 'Down')
+
+
+
+NUM_INIMIGOS = 6
+inimigos = []
+
+for _ in range(NUM_INIMIGOS):
+    t = Turtle()
+    t.shape("square")
+    t.color("red")
+    t.penup()
+    t.speed(0)
+
+    inimigos.append({
+        'turtle': t,
+        'ix': random.randint(0, len(tilesx) - 1),
+        'iy': len(tilesy) - 1
+    })
+
+
+def reload():
+    for inimigo in inimigos:
+        inimigo['iy'] -= 1
+
+        if inimigo['iy'] < 0:
+            inimigo['iy'] = len(tilesy) - 1
+            inimigo['ix'] = random.randint(0, len(tilesx) - 1)
+            state['score'] += 1
+
+        x = tilesx[inimigo['ix']]
+        y = tilesy[inimigo['iy']]
+        inimigo['turtle'].goto(x, y)
+
+        # evento do game over
+        if inimigo['ix'] == player['ix'] and inimigo['iy'] == player['iy']:
+            game_over()
             return
 
-    ontimer(move, 100)
+    update()
+    ontimer(reload, 250)
 
 
-def change(x, y):
-    """Change pacman aim if valid."""
-    if valid(pacman + vector(x, y)):
-        aim.x = x
-        aim.y = y
+def game_over():
+    clear()
+    penup()
+    goto(0, 0)
+    color("green")
+    write("GAME OVER", align="center", font=("Arial", 24, "bold"))
 
 
-setup(420, 420, 370, 0)
-hideturtle()
-tracer(False)
-writer.goto(160, 160)
-writer.color('white')
-writer.write(state['score'])
-listen()
-onkey(lambda: change(5, 0), 'Right')
-onkey(lambda: change(-5, 0), 'Left')
-onkey(lambda: change(0, 5), 'Up')
-onkey(lambda: change(0, -5), 'Down')
-world()
-move()
+reload()
 done()
