@@ -1,6 +1,6 @@
 from turtle import *
 import random
-
+from freegames import vector, floor
 tilesx = [-150, -100, -50, 0, 50, 100, 150]
 tilesy = [-150, -100, -50, 0, 50, 100, 150]
 
@@ -70,13 +70,17 @@ for _ in range(NUM_INIMIGOS):
 
 
 def reload():
+    cont = 0
     for inimigo in inimigos:
+        cont+=1
         inimigo['iy'] -= 1
 
         if inimigo['iy'] < 0:
             inimigo['iy'] = len(tilesy) - 1
             inimigo['ix'] = random.randint(0, len(tilesx) - 1)
-            state['score'] += 1
+            # state['score'] += 1
+            if cont==6:
+                state['score']+=1
 
         x = tilesx[inimigo['ix']]
         y = tilesy[inimigo['iy']]
@@ -86,18 +90,29 @@ def reload():
         if inimigo['ix'] == player['ix'] and inimigo['iy'] == player['iy']:
             game_over()
             return
-
+    clear()
+    penup()
+    goto(-160, 160)
+    color("black")
+    write(f"Score: {state['score']}", align="left", font=("Arial", 16))
     update()
     ontimer(reload, 250)
 
 
 def game_over():
     clear()
+    turtle_player.hideturtle()
+    for obs in inimigos:
+        obs["turtle"].hideturtle()
     penup()
     goto(0, 0)
     color("green")
     write("GAME OVER", align="center", font=("Arial", 24, "bold"))
+    goto(0, -30)
+    color("green")
+    write(f"Score: {state['score']}", align="center", font=("Arial", 18))
+    update()
 
-
+hideturtle()
 reload()
 done()
