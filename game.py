@@ -71,16 +71,18 @@ for _ in range(NUM_INIMIGOS):
 
 def reload():
     cont = 0
+    state['score']+=1
     for inimigo in inimigos:
         cont+=1
+        # state['score']+=1
         inimigo['iy'] -= 1
+
 
         if inimigo['iy'] < 0:
             inimigo['iy'] = len(tilesy) - 1
             inimigo['ix'] = random.randint(0, len(tilesx) - 1)
-            # state['score'] += 1
-            if cont==6:
-                state['score']+=1
+            # if cont==6:
+            #     state['score']+=2
 
         x = tilesx[inimigo['ix']]
         y = tilesy[inimigo['iy']]
