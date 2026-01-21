@@ -32,7 +32,7 @@ class Score():
         }
 
         for u in self.conteudo:
-            if u["nome"] == usuario_limpo["nome"]:
+            if u["nome"] == usuario_limpo["nome"] and u["score"]< usuario_limpo["score"]:
                 u["score"] = usuario_limpo["score"]
                 Score.salva_user(self, lista=self.conteudo)
                 return
