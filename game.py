@@ -1,6 +1,14 @@
 from turtle import *
 import random
 from freegames import vector, floor
+from main import Score
+
+"""
+1- Multyplayer
+2- Salvar pontuações
+3- Definir record
+4- 
+"""
 tilesx = [-150, -100, -50, 0, 50, 100, 150]
 tilesy = [-150, -100, -50, 0, 50, 100, 150]
 
@@ -26,6 +34,8 @@ turtle_player.penup()
 turtle_player.speed(0)
 turtle_player.goto(state['posicaox'], state['posicaoy'])
 
+NUM_INIMIGOS = 6
+inimigos = []
 
 def move(direcao):
     if direcao == 'direita' and player['ix'] < len(tilesx) - 1:
@@ -44,16 +54,9 @@ def move(direcao):
     update()
 
 
-listen()
-onkeypress(lambda: move('direita'), 'Right')
-onkeypress(lambda: move('esquerda'), 'Left')
-onkeypress(lambda: move('cima'), 'Up')
-onkeypress(lambda: move('baixo'), 'Down')
 
 
 
-NUM_INIMIGOS = 6
-inimigos = []
 
 for _ in range(NUM_INIMIGOS):
     t = Turtle()
@@ -81,8 +84,8 @@ def reload():
         if inimigo['iy'] < 0:
             inimigo['iy'] = len(tilesy) - 1
             inimigo['ix'] = random.randint(0, len(tilesx) - 1)
-            # if cont==6:
-            #     state['score']+=2
+            if cont==6:
+                state['score']+=10
 
         x = tilesx[inimigo['ix']]
         y = tilesy[inimigo['iy']]
@@ -114,7 +117,14 @@ def game_over():
     color("green")
     write(f"Score: {state['score']}", align="center", font=("Arial", 18))
     update()
+    jogador = Score("test.json")
+    jogador.add_user({"nome": "Matheuzinho", "score": state['score']})
 
+listen()
+onkeypress(lambda: move('direita'), 'Right')
+onkeypress(lambda: move('esquerda'), 'Left')
+onkeypress(lambda: move('cima'), 'Up')
+onkeypress(lambda: move('baixo'), 'Down')
 hideturtle()
 reload()
 done()
