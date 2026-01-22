@@ -53,6 +53,7 @@ def quadrado(x, y):
     init = -210
     turtle.goto(-210, -210)
     turtle.down()
+    turtle.left(90)
     for n in range(8):
         for n in range(8):
             turtle.begin_fill()
