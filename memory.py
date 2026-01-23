@@ -38,35 +38,35 @@ def quadrado(x, y):
     """Desenha um quadrado branco com contorno preto em (x, y)."""
     #TODO rescrever de forma que desenhe um quadrado a partir do ponto (x,y)
     # com 50 pixels de lado
+    turtle.up()
+    turtle.goto(x, y)
+    turtle.down()
+    turtle.color('black', 'white')
+    turtle.begin_fill()
+    for _ in range(4):
+        turtle.forward(420)
+        turtle.left(90)
+    turtle.end_fill()
+    turtle.left(90)
+    # turtle.color("black", "white")
     # turtle.up()
+    # init = -210
     # turtle.goto(-210, -210)
     # turtle.down()
-    # turtle.color('black', 'white')
-    # turtle.begin_fill()
-    # for _ in range(4):
-    #     turtle.forward(420)
-    #     turtle.left(90)
-    # turtle.end_fill()
     # turtle.left(90)
-    turtle.color("black", "white")
-    turtle.up()
-    init = -210
-    turtle.goto(-210, -210)
-    turtle.down()
-    turtle.left(90)
-    for n in range(8):
-        for n in range(8):
-            turtle.begin_fill()
-            for n in range(4):
-                turtle.fd(50)
-                turtle.left(90)
-            turtle.end_fill()
-            turtle.left(90)
-            turtle.fd(50)
-        turtle.up()
-        init+=50
-        turtle.goto(-210, init)
-        turtle.down()
+    # for n in range(8):
+    #     for n in range(8):
+    #         turtle.begin_fill()
+    #         for n in range(4):
+    #             turtle.fd(50)
+    #             turtle.left(90)
+    #         turtle.end_fill()
+    #         turtle.left(90)
+    #         turtle.fd(50)
+    #     turtle.up()
+    #     init+=50
+    #     turtle.goto(-210, init)
+    #     turtle.down()
 
 
 
