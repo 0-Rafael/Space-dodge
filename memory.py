@@ -35,7 +35,7 @@ toques = 0
 game = {"state": False}
 pecas_4_4 = list(range(8)) * 2
 escondido_4_4 = [True] * 16
-
+username = ""
 def quadrado(x, y):
     """Desenha um quadrado branco com contorno preto em (x, y)."""
     #TODO rescrever de forma que desenhe um quadrado a partir do ponto (x,y)
@@ -88,8 +88,10 @@ def toque(x, y):
         estado['marca'] = None
 
 def init():
+    global username
     turtle.goto(0,0)
     turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
+    turtle.goto(0,-100)
     username = turtle.textinput("Username", "Digite seu username: ")
     game['state'] = True
     turtle.update()
@@ -98,7 +100,6 @@ def desenhar():
     """Desenha a imagem e as peças."""
     global game
     if game['state']:
-        print("askubfiuyg")
         turtle.clear()
         turtle.goto(0, 0)
         turtle.shape(carro)
@@ -121,6 +122,8 @@ def desenhar():
         turtle.ontimer(desenhar, 100)
     else:
         init()
+        turtle.update()
+        turtle.ontimer(desenhar, 100)
 
 def game_over():
     turtle.clear()
