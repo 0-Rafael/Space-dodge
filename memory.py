@@ -28,14 +28,17 @@ import random
 from time import sleep
 from freegames import path
 carro = path('car.gif')
-pecas = list(range(32)) * 2
+pecas = list(range(8)) * 2
 estado = {'marca': None}
-escondido = [True] * 64
+escondido = [True] * 16
 toques = 0
 game = {"state": False}
 pecas_4_4 = list(range(8)) * 2
 escondido_4_4 = [True] * 16
 username = ""
+def letras(ind):
+    letra = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H','A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    return letra[ind]
 def quadrado(x, y):
     """Desenha um quadrado branco com contorno preto em (x, y)."""
     #TODO rescrever de forma que desenhe um quadrado a partir do ponto (x,y)
@@ -46,7 +49,7 @@ def quadrado(x, y):
     turtle.color('black', 'white')
     turtle.begin_fill()
     for _ in range(4):
-        turtle.forward(50)
+        turtle.forward(100)
         turtle.left(90)
     turtle.end_fill()
 
@@ -65,13 +68,15 @@ def quadrado_4(x,y):
 
 def indice(x, y):
     """Converte coordenadas (x, y) no índice da peça."""
-    return int((x + 200) // 50 + ((y + 200) // 50) * 8)
-
+    coluna = int((x + 200) // 100)
+    linha = int((y + 200) // 100)
+    if 0 <= coluna < 4 and 0 <= linha < 4:
+        return linha * 4 + coluna
+    return None
 
 def coordenadas(contador):
     """Converte o índice da peça em coordenadas (x, y)."""
-    return (contador % 8) * 50 - 200, (contador // 8) * 50 - 200
-
+    return (contador % 4) * 100 - 200 , (contador // 4) * 100 - 200
 
 def toque(x, y):
     """Atualiza a marcação e as peças escondidas com base no clique."""
@@ -105,11 +110,11 @@ def desenhar():
         turtle.shape(carro)
         turtle.stamp()
         global toques
-        for contador in range(64):
+        for contador in range(16):
             if escondido[contador]:
                 x, y = coordenadas(contador)
                 quadrado(x, y)
-        if toques>=3:
+        if toques>=12:
             return game_over()
         marca = estado['marca']
         if marca is not None and escondido[marca]:
@@ -117,7 +122,7 @@ def desenhar():
             turtle.up()
             turtle.goto(x + 2, y)
             turtle.color('black')
-            turtle.write(pecas[marca], font=('Arial', 30, 'normal'))
+            turtle.write(letras(pecas[marca]), font=('Arial', 30, 'normal'))
         turtle.update()
         turtle.ontimer(desenhar, 100)
     else:
