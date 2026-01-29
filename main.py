@@ -44,6 +44,4 @@ class Score():
         self.conteudo.append(usuario_limpo)
         self.salva_user(self.conteudo)
 
-class Home():
-    def __init__(self) -> None:
-        pass
+        
