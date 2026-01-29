@@ -10,11 +10,11 @@ Depois, você deverá resolver os desafios propostos abaixo.
 
 Desafios:
 
-1. Contar e imprimir quantos cliques ocorrem.
-2. Reduzir o número de peças para um tabuleiro 4x4.
+1. Contar e imprimir quantos cliques ocorrem. --concluido
+2. Reduzir o número de peças para um tabuleiro 4x4. --concluido
 3. Detectar quando todas as peças forem reveladas.
 4. Centralizar peças de um único dígito.
-5. Usar letras em vez de números.
+5. Usar letras em vez de números. --concluido
 6. Identificar jogador em cada rodada. Qual o nome do jogador que vai iniciar um jogo?
 7. Armazenar jogador e suas pontuações em arquivo. Ao final do jogo, armazenar em arquivo
 o nome do jogador que jogou e sua respectiva pontuação na rodada. 
@@ -38,7 +38,10 @@ toques = 0
 game = {"state": False}
 pecas_4_4 = list(range(8)) * 2
 escondido_4_4 = [True] * 16
-username = ""
+username = None
+modo_de_jogo = None
+dificuldade = None
+p1 = None
 def letras(ind):
     letra = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H','A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     return letra[ind]
@@ -103,56 +106,59 @@ def digitar_username(x,y):
 
 
 def init():
-    # global username
+    global username
+    turtle.up()
+    turtle.goto(0,80)
+    turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
+    turtle.teleport(0,40)
+    turtle.write("Digite seu username:", font=('Arial', 14, 'normal'), align="Center")
+    turtle.teleport(0,30)
+    turtle.showturtle()
+    turtle.onclick(digitar_username)
+    if username is not None:
+        teste_de_validcao = Score("test.json")
+        if not teste_de_validcao.existe_usuario(username):
+            game['state'] = True
+            turtle.update()
+            turtle.hideturtle()
+            turtle.onscreenclick(toque)
+            return
+        else:
+            turtle.teleport(0,20)
+            turtle.pencolor("red")
+            turtle.write("Ja existe um usuario com esse nome!", font=('Arial', 14, 'normal'), align="Center")
+            turtle.teleport(0,10)
+            turtle.pencolor("black")
+    # turtle.clear()
     # turtle.up()
-    # turtle.goto(0,80)
-    # turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
-    # turtle.teleport(0,40)
-    # turtle.write("Digite seu username:", font=('Arial', 14, 'normal'), align="Center")
-    # turtle.teleport(0,30)
+    # turtle.goto(0, 120)
+    # turtle.write("JOGO DA MEMÓRIA", align="center", font=("Arial", 22, "bold"))
+
+    # turtle.goto(0, 80)
+    # turtle.write("Clique para digitar seu username", align="center", font=("Arial", 14, "normal"))
+    # turtle.goto(0, 60)
+    # turtle.write("[ USERNAME ]", align="center", font=("Arial", 14, "bold"))
+    # turtle.goto(0, 40)
     # turtle.showturtle()
     # turtle.onclick(digitar_username)
-    # if username is not None:
-    #     teste_de_validcao = Score("test.json")
-    #     if not teste_de_validcao.existe_usuario(username):
-    #         game['state'] = True
-    #         turtle.update()
-    #         turtle.hideturtle()
-    #         turtle.onscreenclick(toque)
-    #         return
-    #     else:
-    #         turtle.teleport(0,20)
-    #         turtle.pencolor("red")
-    #         turtle.write("Ja existe um usuario com esse nome!", font=('Arial', 14, 'normal'), align="Center")
-    #         turtle.teleport(0,10)
-    #         turtle.pencolor("black")
-    turtle.clear()
-    turtle.up()
-    turtle.goto(0, 120)
-    turtle.write("JOGO DA MEMÓRIA", align="center", font=("Arial", 22, "bold"))
 
-    turtle.goto(0, 80)
-    turtle.write("Clique para digitar seu username", align="center", font=("Arial", 14, "normal"))
-    turtle.goto(0, 60)
-    turtle.write("[ USERNAME ]", align="center", font=("Arial", 14, "bold"))
+    # turtle.goto(-100, 10)
+    # turtle.write("1 Jogador", align="center", font=("Arial", 14, "normal"))
 
-    turtle.goto(-100, 10)
-    turtle.write("1 Jogador", align="center", font=("Arial", 14, "normal"))
+    # turtle.goto(100, 10)
+    # turtle.write("2 Jogadores", align="center", font=("Arial", 14, "normal"))
 
-    turtle.goto(100, 10)
-    turtle.write("2 Jogadores", align="center", font=("Arial", 14, "normal"))
+    # turtle.goto(-100, -40)
+    # turtle.write("Fácil", align="center", font=("Arial", 14, "normal"))
 
-    turtle.goto(-100, -40)
-    turtle.write("Fácil", align="center", font=("Arial", 14, "normal"))
+    # turtle.goto(100, -40)
+    # turtle.write("Difícil", align="center", font=("Arial", 14, "normal"))
 
-    turtle.goto(100, -40)
-    turtle.write("Difícil", align="center", font=("Arial", 14, "normal"))
+    # turtle.goto(0, -90)
+    # turtle.write("INICIAR JOGO", align="center", font=("Arial", 16, "bold"))
 
-    turtle.goto(0, -90)
-    turtle.write("INICIAR JOGO", align="center", font=("Arial", 16, "bold"))
-
-    # Associação dos cliques
-    turtle.onclick(digitar_username, 1)
+    # # Associação dos cliques
+    # turtle.onclick(digitar_username, 1)
 def desenhar():
     """Desenha a imagem e as peças."""
     global game
