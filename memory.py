@@ -27,13 +27,12 @@ import turtle
 import random
 from time import sleep
 from freegames import path
-
 carro = path('car.gif')
 pecas = list(range(32)) * 2
 estado = {'marca': None}
 escondido = [True] * 64
 toques = 0
-game = False
+game = {"state": False}
 pecas_4_4 = list(range(8)) * 2
 escondido_4_4 = [True] * 16
 
@@ -90,16 +89,16 @@ def toque(x, y):
 
 def init():
     turtle.goto(0,0)
-    mensangem = turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
-    username = turtle.numinput("Username", "Digite seu username: ")
-
-    game= True
-    return
+    turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
+    username = turtle.textinput("Username", "Digite seu username: ")
+    game['state'] = True
+    turtle.update()
+    return 
 def desenhar():
     """Desenha a imagem e as peças."""
     global game
-    init()
-    if game:
+    if game['state']:
+        print("askubfiuyg")
         turtle.clear()
         turtle.goto(0, 0)
         turtle.shape(carro)
@@ -120,6 +119,8 @@ def desenhar():
             turtle.write(pecas[marca], font=('Arial', 30, 'normal'))
         turtle.update()
         turtle.ontimer(desenhar, 100)
+    else:
+        init()
 
 def game_over():
     turtle.clear()
