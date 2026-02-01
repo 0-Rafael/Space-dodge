@@ -25,7 +25,6 @@ que jogaram o jogo com suas respectivas pontuações.
 
 import turtle
 import random
-from time import sleep
 from freegames import path
 from main import Score
 
@@ -42,6 +41,23 @@ username = None
 modo_de_jogo = None
 dificuldade = None
 p1 = None
+configuracoes = {"username": None, "dificuldade": None, "p1": True, "p2": False}
+
+t_username= turtle.Turtle()
+mensagens_avisos = turtle.Turtle()
+mensagens_avisos.hideturtle()
+mensagens_avisos.teleport(0,-140)
+mensagens_avisos.pencolor("red")
+
+mudar_p1 = turtle.Turtle()
+mudar_p1.teleport(-100,10)
+mudar_p2 = turtle.Turtle()
+mudar_p2.teleport(100,10)
+
+mudar_facil = turtle.Turtle()
+mudar_facil.teleport(-100,-40)
+mudar_difi = turtle.Turtle()
+mudar_difi.teleport(100,-40)
 def letras(ind):
     letra = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H','A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     return letra[ind]
@@ -98,71 +114,114 @@ def toque(x, y):
         escondido[marca] = False
         estado['marca'] = None
 
-def digitar_username(x,y):
-    global username
-    username = turtle.textinput("Username", "Digite seu username: ")
-    if username=="":
-        username= None
+# def digitar_username(x,y):
+#     global username
+#     username = turtle.textinput("Username", "Digite seu username: ")
+#     if username=="":
+#         username= None
 
 
 def init():
     global username
-    turtle.up()
-    turtle.goto(0,80)
-    turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
-    turtle.teleport(0,40)
-    turtle.write("Digite seu username:", font=('Arial', 14, 'normal'), align="Center")
-    turtle.teleport(0,30)
-    turtle.showturtle()
-    turtle.onclick(digitar_username)
-    if username is not None:
-        teste_de_validcao = Score("test.json")
-        if not teste_de_validcao.existe_usuario(username):
-            game['state'] = True
-            turtle.update()
-            turtle.hideturtle()
-            turtle.onscreenclick(toque)
-            return
-        else:
-            turtle.teleport(0,20)
-            turtle.pencolor("red")
-            turtle.write("Ja existe um usuario com esse nome!", font=('Arial', 14, 'normal'), align="Center")
-            turtle.teleport(0,10)
-            turtle.pencolor("black")
-    # turtle.clear()
     # turtle.up()
-    # turtle.goto(0, 120)
-    # turtle.write("JOGO DA MEMÓRIA", align="center", font=("Arial", 22, "bold"))
-
-    # turtle.goto(0, 80)
-    # turtle.write("Clique para digitar seu username", align="center", font=("Arial", 14, "normal"))
-    # turtle.goto(0, 60)
-    # turtle.write("[ USERNAME ]", align="center", font=("Arial", 14, "bold"))
-    # turtle.goto(0, 40)
+    # turtle.goto(0,80)
+    # turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
+    # turtle.teleport(0,40)
+    # turtle.write("Digite seu username:", font=('Arial', 14, 'normal'), align="Center")
+    # turtle.teleport(0,30)
     # turtle.showturtle()
     # turtle.onclick(digitar_username)
+    turtle.clear()
+    turtle.up()
+    turtle.goto(0, 120)
+    turtle.write("JOGO DA MEMÓRIA", align="center", font=("Arial", 22, "bold"))
 
-    # turtle.goto(-100, 10)
-    # turtle.write("1 Jogador", align="center", font=("Arial", 14, "normal"))
+    turtle.goto(0, 80)
+    turtle.write("Clique para digitar seu username", align="center", font=("Arial", 14, "normal"))
+    turtle.goto(0, 60)
+    
+    t_username.teleport(0,60)
+    t_username.write(f"[ {configuracoes['username'] if configuracoes["username"]!=None else ""} ]", align="center", font=("Arial", 14, "bold"))
+    t_username.onclick(digitar_username)
+    turtle.goto(0, 40)
+    turtle.showturtle()
+    turtle.onclick(digitar_username)
+    if configuracoes["username"] is not None:
+        teste_de_validcao = Score("test.json")
+        if teste_de_validcao.existe_usuario(configuracoes["username"]):
+            mensagens_avisos.clear()
+            mensagens_avisos.write("Ja existe um usuario com esse nome!", font=('Arial', 14, 'normal'), align="Center")
+            t_username.clear()
+            configuracoes["username"] = None
+            turtle.update()
 
-    # turtle.goto(100, 10)
-    # turtle.write("2 Jogadores", align="center", font=("Arial", 14, "normal"))
+    turtle.goto(-100, 10)
+    turtle.write("1 Jogador", align="center", font=("Arial", 14, "normal"))
+    turtle.showturtle()
+    mudar_p1.onclick(mudar_modo_de_jogador_p1)
+    turtle.goto(100, 10)
 
-    # turtle.goto(-100, -40)
-    # turtle.write("Fácil", align="center", font=("Arial", 14, "normal"))
+    turtle.write("2 Jogadores", align="center", font=("Arial", 14, "normal"))
+    mudar_p2.onclick(mudar_modo_de_jogador_p2)
+    turtle.goto(-100, -40)
+    turtle.write("Fácil", align="center", font=("Arial", 14, "normal"))
+    mudar_facil.onclick(mudar_difi_facil)
+    turtle.goto(100, -40)
+    turtle.write("Difícil", align="center", font=("Arial", 14, "normal"))
+    mudar_difi.onclick(mudar_difi_difi)
 
-    # turtle.goto(100, -40)
-    # turtle.write("Difícil", align="center", font=("Arial", 14, "normal"))
-
-    # turtle.goto(0, -90)
-    # turtle.write("INICIAR JOGO", align="center", font=("Arial", 16, "bold"))
-
-    # # Associação dos cliques
+    turtle.goto(0, -90)
+    turtle.write("INICIAR JOGO", align="center", font=("Arial", 16, "bold"))
+    turtle.onclick(init_game)
+    # Associação dos cliques
     # turtle.onclick(digitar_username, 1)
+
+
+def digitar_username(x,y):
+    configuracoes["username"] = turtle.textinput("Username", "Digite seu username: ")
+    turtle.clear()
+    turtle.update()
+    t_username.clear()
+    if configuracoes["username"]=="":
+        configuracoes["username"] = None
+    else:
+        t_username.clear()
+
+
+def init_game(x,y):
+    if configuracoes["username"] and any(configuracoes["dificuldade"]):
+        game["state"] = True
+        turtle.onscreenclick(toque)
+    else:
+        mensagens_avisos.clear()
+        mensagens_avisos.write("complete todas as configuraçoes", font=('Arial', 14, 'normal'), align="Center")
+        turtle.update()
+
+def mudar_modo_de_jogador_p1(x,y):
+    configuracoes["p2"] = False
+    print("Modo de jogo alterado para \033[0;34m1 player\033[m")
+    return
+
+def mudar_modo_de_jogador_p2(x,y):
+    configuracoes["p2"] = True
+    print("Modo de jogo alterado para \033[0;33m2 players\033[m")
+    return
+
+def mudar_difi_facil(x,y):
+    configuracoes["dificuldade"] = "facil"
+    print("Dificuldade alterada para \033[0;32mfacil\033[m")
+    return
+def mudar_difi_difi(x,y):
+    configuracoes["dificuldade"] = "dificil"
+    print("Dificuldade alterada para \033[0;31mdificil\033[m")
+    return
 def desenhar():
     """Desenha a imagem e as peças."""
     global game
     if game['state']:
+        for n in turtle.turtles():
+            n.clear()
+            n.hideturtle()
         turtle.clear()
         turtle.goto(0, 0)
         turtle.shape(carro)
