@@ -29,7 +29,8 @@ class Score():
     def add_user(self, usuario: dict):
         usuario_limpo = {
             "nome": str(usuario["nome"]),
-            "score": int(usuario["score"])
+            "score": int(usuario["score"]),
+            "dificuldade": str(usuario["dificuldade"])
         }
 
         for u in self.conteudo:

@@ -254,6 +254,10 @@ def desenhar():
             turtle.goto(x + 2, y)
             turtle.color('black')
             turtle.write(letras(pecas_4_4[marca]) if configuracoes["dificuldade"]=="facil" else pecas[marca], font=('Arial', 30, 'normal'))
+        if not any(escondido_4_4) if configuracoes["dificuldade"]=="facil" else not any(escondido): 
+            game["state"] = False
+            game_over()
+            return
         turtle.update()
         turtle.ontimer(desenhar, 100)
     else:
@@ -265,10 +269,10 @@ def game_over():
     turtle.clear()
     turtle.goto(-60,0)
     p1 = Score("test.json")
-    p1.add_user({"nome": username, "score": toques})
+    p1.add_user({"nome": configuracoes["username"], "score": toques, "dificuldade": configuracoes["dificuldade"]})
     turtle.write("Acabou", font=('Arial', 30, 'normal'))
 random.shuffle(pecas)
-
+random.shuffle(pecas_4_4)
 turtle.setup(420, 420, 370, 0)
 turtle.addshape(carro)
 turtle.hideturtle()
