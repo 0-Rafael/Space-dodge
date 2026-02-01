@@ -1,11 +1,67 @@
 [
     {
         "nome": "Matheuzinho",
-        "score": 175
+        "score": 175,
+        "dificuldade": "dificil"
     },
     {
-        "nome": "Andr\u00e9",
+        "nome": "Andre",
         "score": 35,
         "dificuldade": "facil"
+    },
+    {
+        "nome": "teste1",
+        "score": 30,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Teste2",
+        "score": 25,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Teste4",
+        "score": 30,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Teste6",
+        "score": 36,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Teste7",
+        "score": 35,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Teste8",
+        "score": 42,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "A",
+        "score": 35,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Teste9",
+        "score": 35,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "ejflks",
+        "score": 31,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "jbdha",
+        "score": 26,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Matheuzinho2",
+        "score": 175,
+        "dificuldade": "dificil"
     }
 ]

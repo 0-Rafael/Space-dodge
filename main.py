@@ -17,13 +17,17 @@ class Score():
         file.close()
 
 
-    def existe_usuario(self, nome):
+    def existe_usuario(self, nome, dificuldade):
         file = self.conteudo
         for n in file:
-            if n["nome"]==nome:
+            if n["nome"]==nome and n["dificuldade"]==dificuldade:
                 return True
-            else:
-                return False
+        return False
+    def existe_nome(self, nome):
+        for u in self.conteudo:
+            if u["nome"] == nome:
+                return True
+        return False
             
 
     def add_user(self, usuario: dict):
@@ -44,5 +48,29 @@ class Score():
 
         self.conteudo.append(usuario_limpo)
         self.salva_user(self.conteudo)
+    def mostra_scores(self):
+        facil = []
+        dificil = []
+        for a in self.conteudo:
+            if a["dificuldade"]=="facil":
+                facil.append(a)
+            else:
+                dificil.append(a)
+
+        print(f"\033[0;32mFacil\033[m {' '*25}\033[0;31mDificil\033[m")
+        for i in range(max(len(facil),len(dificil))):
+            linha = ""
+            if i < len(facil):
+                linha += f"{i+1}° - {facil[i]['nome']} ({facil[i]['score']} pts)"
+            else:
+                linha += " " * 30
+
+            linha += "\t"
+            if i < len(dificil):
+                linha += f"{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} pts)"
+
+            print(linha)
+
+
 
         

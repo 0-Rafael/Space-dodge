@@ -41,7 +41,7 @@ username = None
 modo_de_jogo = None
 dificuldade = None
 p1 = None
-configuracoes = {"username": None, "dificuldade": None, "p1": True, "p2": False}
+configuracoes = {"username": None, "dificuldade": None, "p1": True, "p2": False, "usernamep2": None}
 
 t_username= turtle.Turtle()
 mensagens_avisos = turtle.Turtle()
@@ -58,6 +58,8 @@ mudar_facil = turtle.Turtle()
 mudar_facil.teleport(-100,-40)
 mudar_difi = turtle.Turtle()
 mudar_difi.teleport(100,-40)
+
+score = Score("test.json")
 def letras(ind):
     letra = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H','A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     return letra[ind]
@@ -151,19 +153,32 @@ def init():
     turtle.goto(0, 60)
     
     t_username.teleport(0,60)
-    t_username.write(f"[ {configuracoes['username'] if configuracoes["username"]!=None else ""} ]", align="center", font=("Arial", 14, "bold"))
+    if configuracoes["p2"]==False:
+        t_username.clear()
+        t_username.write(f"[ {configuracoes['username'] if configuracoes["username"]!=None else ""} ]", align="center", font=("Arial", 14, "bold"))
+    else:
+        t_username.clear()
+        t_username.write(f"[ {configuracoes['username'] if configuracoes["username"]!=None else "" } | {configuracoes['usernamep2'] if configuracoes['usernamep2']!= None else ""} ]", align="center", font=("Arial", 14, "bold"))
     t_username.onclick(digitar_username)
     turtle.goto(0, 40)
     turtle.showturtle()
     turtle.onclick(digitar_username)
-    if configuracoes["username"] is not None:
-        teste_de_validcao = Score("test.json")
-        if teste_de_validcao.existe_usuario(configuracoes["username"]):
-            mensagens_avisos.clear()
-            mensagens_avisos.write("Ja existe um usuario com esse nome!", font=('Arial', 14, 'normal'), align="Center")
-            t_username.clear()
-            configuracoes["username"] = None
-            turtle.update()
+    # if configuracoes["username"] is not None  if configuracoes["p2"]== False else configuracoes["username"] is not None and configuracoes["usernamep2"] is not None:
+    #     teste_de_validcao = Score("test.json")
+    #     if teste_de_validcao.existe_usuario(configuracoes["username"]) or configuracoes["usernamep2"]==configuracoes["username"] or teste_de_validcao.existe_usuario(configuracoes["usernamep2"]) if configuracoes["p2"] else None:
+    #         mensagens_avisos.clear()
+    #         mensagens_avisos.write("Ja existe um usuario com esse nome!", font=('Arial', 14, 'normal'), align="Center")
+    #         t_username.clear()
+    #         if teste_de_validcao.existe_usuario(configuracoes["username"]):
+    #             configuracoes["username"] = None 
+    #         elif configuracoes["username"]==configuracoes["usernamep2"]:
+    #             configuracoes["username"] = None 
+    #             configuracoes["usernamep2"] = None 
+    #         else:
+    #             configuracoes["usernamep2"]== None
+    #         turtle.update()
+    #     else:
+    #         mensagens_avisos.clear()
 
     turtle.goto(-100, 10)
     turtle.write("1 Jogador", align="center", font=("Arial", 14, "normal"))
@@ -196,7 +211,90 @@ def digitar_username(x,y):
         configuracoes["username"] = None
     else:
         t_username.clear()
+    if configuracoes["dificuldade"]==None:
+        if configuracoes["p2"]:
+            if configuracoes["username"]==configuracoes["usernamep2"]:
+                mensagens_avisos.clear()
+                mensagens_avisos.write(
+                "Players não podem ter o mesmo nome",
+                font=('Arial', 14, 'normal'),
+                align="Center"
+                )
+                configuracoes["username"]= None
+                return
+        if score.existe_nome(configuracoes["username"]):
+            mensagens_avisos.clear()
+            mensagens_avisos.write(
+                "Já existe um usuário com esse nome!",
+                font=('Arial', 14, 'normal'),
+                align="Center"
+            )
+            configuracoes["username"] = None
+            return
+                # t_username.clear()
+                # if teste_de_validcao.existe_usuario(configuracoes["username"]):
+                #     configuracoes["username"] = None 
+                # elif configuracoes["username"]==configuracoes["usernamep2"]:
+                #     configuracoes["username"] = None 
+                #     configuracoes["usernamep2"] = None 
+                # else:
+                #     configuracoes["usernamep2"]== None
+                #turtle.update()
+        else:
+            mensagens_avisos.clear()
+    else:
+        mensagens_avisos.clear()
+        validar_usuario_completo("username")
+def validar_usuario_completo(player):
+    if configuracoes[player] is None:
+        return
 
+    if score.existe_usuario(
+        configuracoes[player],
+        configuracoes["dificuldade"]
+    ):
+        mensagens_avisos.clear()
+        mensagens_avisos.write(
+            "Usuário já jogou nessa dificuldade!",
+            font=('Arial', 14, 'normal'),
+            align="Center"
+        )
+        configuracoes[player]= None
+        t_username.clear()
+def digitar_username_p2():
+    configuracoes["usernamep2"] = turtle.textinput("Username", "Digite o username do Player 2: ")
+    turtle.clear()
+    turtle.update()
+    t_username.clear()
+    if configuracoes["usernamep2"]=="":
+        configuracoes["usernamep2"] = None
+    else:
+        t_username.clear()
+    if configuracoes["dificuldade"]==None:
+        if configuracoes["username"]==configuracoes["usernamep2"]:
+            mensagens_avisos.clear()
+            mensagens_avisos.write(
+            "Players não podem ter o mesmo nome",
+            font=('Arial', 14, 'normal'),
+            align="Center"
+            )
+            configuracoes["usernamep2"]= None
+            return
+        if score.existe_nome(configuracoes["usernamep2"]):
+            mensagens_avisos.clear()
+            mensagens_avisos.write(
+                "Já existe um usuário com esse nome!",
+                font=('Arial', 14, 'normal'),
+                align="Center"
+            )
+            configuracoes["usernamep2"] = None
+            return
+        else:
+            mensagens_avisos.clear()
+    else:
+        mensagens_avisos.clear()
+        validar_usuario_completo("usernamep2")
+    
 
 def init_game(x,y):
     if configuracoes["username"] and configuracoes["dificuldade"]!=None:
@@ -215,14 +313,20 @@ def mudar_modo_de_jogador_p1(x,y):
 def mudar_modo_de_jogador_p2(x,y):
     configuracoes["p2"] = True
     print("Modo de jogo alterado para \033[0;33m2 players\033[m")
+    digitar_username_p2()
     return
 
 def mudar_difi_facil(x,y):
     configuracoes["dificuldade"] = "facil"
+    validar_usuario_completo("username")
+    validar_usuario_completo("usernamep2")
+    score.mostra_scores()
     print("Dificuldade alterada para \033[0;32mfacil\033[m")
     return
 def mudar_difi_difi(x,y):
     configuracoes["dificuldade"] = "dificil"
+    validar_usuario_completo("username")
+    validar_usuario_completo("usernamep2")
     print("Dificuldade alterada para \033[0;31mdificil\033[m")
     return
 def desenhar():
@@ -267,10 +371,19 @@ def desenhar():
 
 def game_over():
     turtle.clear()
-    turtle.goto(-60,0)
-    p1 = Score("test.json")
-    p1.add_user({"nome": configuracoes["username"], "score": toques, "dificuldade": configuracoes["dificuldade"]})
-    turtle.write("Acabou", font=('Arial', 30, 'normal'))
+    turtle.goto(-120,0)
+    score.add_user({"nome": configuracoes["username"], "score": toques, "dificuldade": configuracoes["dificuldade"]})
+    turtle.write("FIM DE JOGO", font=('Arial', 30, 'normal'))
+    ranking = turtle.Turtle()
+    ranking.teleport(-140,-50)
+    ranking.showturtle()
+    ranking.write("ver o ranking", font=('Arial', 18, 'normal'))
+    ranking.teleport(-100,-50)
+    ranking.onclick(ver_ranking)
+    turtle.update()
+    turtle.ontimer(game_over, 100)
+def ver_ranking(z,y):
+    score.mostra_scores()
 random.shuffle(pecas)
 random.shuffle(pecas_4_4)
 turtle.setup(420, 420, 370, 0)
