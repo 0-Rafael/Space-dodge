@@ -30,9 +30,9 @@ from main import Score
 
 
 carro = path('car.gif')
-pecas = list(range(8)) * 2
+pecas = list(range(32)) * 2
 estado = {'marca': None}
-escondido = [True] * 16
+escondido = [True] * 64
 toques = 0
 game = {"state": False}
 pecas_4_4 = list(range(8)) * 2
@@ -61,7 +61,7 @@ mudar_difi.teleport(100,-40)
 def letras(ind):
     letra = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H','A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     return letra[ind]
-def quadrado(x, y):
+def quadrado_4(x, y):
     """Desenha um quadrado branco com contorno preto em (x, y)."""
     #TODO rescrever de forma que desenhe um quadrado a partir do ponto (x,y)
     # com 50 pixels de lado
@@ -75,7 +75,7 @@ def quadrado(x, y):
         turtle.left(90)
     turtle.end_fill()
 
-def quadrado_4(x,y):
+def quadrado(x,y):
     turtle.up()
     turtle.goto(x, y)
     turtle.down()
@@ -96,23 +96,33 @@ def indice(x, y):
         return linha * 4 + coluna
     return None
 
-def coordenadas(contador):
+def indice_4(x,y):
+    return int((x + 200) //50 + ((y + 200) // 50) * 8)
+
+def coordenadas_4(contador):
     """Converte o índice da peça em coordenadas (x, y)."""
     return (contador % 4) * 100 - 200 , (contador // 4) * 100 - 200
 
+def coordenadas(contador):
+    return (contador % 8 ) * 50 -200, (contador //8) * 50 -200
 def toque(x, y):
     """Atualiza a marcação e as peças escondidas com base no clique."""
-    posicao = indice(x, y)
+    posicao = indice(x, y) if configuracoes["dificuldade"]=="facil" else indice_4(x,y)
     marca = estado['marca']
     global toques
     toques+=1
     print(toques)
-    if marca is None or marca == posicao or pecas[marca] != pecas[posicao]:
+    if (marca is None or marca == posicao or (pecas[marca] != pecas[posicao] if configuracoes["dificuldade"]=="dificil" else pecas_4_4[marca] != pecas_4_4[posicao])):
         estado['marca'] = posicao
     else:
-        escondido[posicao] = False
-        escondido[marca] = False
-        estado['marca'] = None
+        if configuracoes["dificuldade"]=="dificil":
+            escondido[posicao] = False
+            escondido[marca] = False
+            estado['marca'] = None
+        else:
+            escondido_4_4[posicao] = False
+            escondido_4_4[marca] = False
+            estado['marca'] = None
 
 # def digitar_username(x,y):
 #     global username
@@ -189,7 +199,7 @@ def digitar_username(x,y):
 
 
 def init_game(x,y):
-    if configuracoes["username"] and any(configuracoes["dificuldade"]):
+    if configuracoes["username"] and configuracoes["dificuldade"]!=None:
         game["state"] = True
         turtle.onscreenclick(toque)
     else:
@@ -227,19 +237,23 @@ def desenhar():
         turtle.shape(carro)
         turtle.stamp()
         global toques
-        for contador in range(16):
-            if escondido[contador]:
-                x, y = coordenadas(contador)
-                quadrado(x, y)
-        if toques>=12:
-            return game_over()
+        if configuracoes["dificuldade"]=="facil":
+            for contador in range(16):
+                if escondido_4_4[contador]:
+                    x, y = coordenadas_4(contador)
+                    quadrado_4(x, y)
+        else:
+            for contador in range(64):
+                if escondido[contador]:
+                    x, y = coordenadas(contador)
+                    quadrado(x, y)
         marca = estado['marca']
-        if marca is not None and escondido[marca]:
-            x, y = coordenadas(marca)
+        if marca is not None and (escondido[marca] if configuracoes["dificuldade"]=="dificil" else escondido_4_4[marca]):
+            x, y = coordenadas(marca) if configuracoes["dificuldade"]=="dificil" else coordenadas_4(marca)
             turtle.up()
             turtle.goto(x + 2, y)
             turtle.color('black')
-            turtle.write(letras(pecas[marca]), font=('Arial', 30, 'normal'))
+            turtle.write(letras(pecas_4_4[marca]) if configuracoes["dificuldade"]=="facil" else pecas[marca], font=('Arial', 30, 'normal'))
         turtle.update()
         turtle.ontimer(desenhar, 100)
     else:
