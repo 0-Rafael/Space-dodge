@@ -12,15 +12,15 @@ Desafios:
 
 1. Contar e imprimir quantos cliques ocorrem. --concluido
 2. Reduzir o número de peças para um tabuleiro 4x4. --concluido
-3. Detectar quando todas as peças forem reveladas.
+3. Detectar quando todas as peças forem reveladas. --concluido
 4. Centralizar peças de um único dígito.
 5. Usar letras em vez de números. --concluido
-6. Identificar jogador em cada rodada. Qual o nome do jogador que vai iniciar um jogo?
+6. Identificar jogador em cada rodada. Qual o nome do jogador que vai iniciar um jogo? --concluido
 7. Armazenar jogador e suas pontuações em arquivo. Ao final do jogo, armazenar em arquivo
-o nome do jogador que jogou e sua respectiva pontuação na rodada. 
-Deve ser armazenado a quantidade de cliques do jogador até resolver todo o tabuleiro.
+o nome do jogador que jogou e sua respectiva pontuação na rodada. --concluido
+Deve ser armazenado a quantidade de cliques do jogador até resolver todo o tabuleiro. --concluido
 8. Listar jogadores e suas pontuações. Exibir no terminal uma lista de todos os jogadores
-que jogaram o jogo com suas respectivas pontuações.
+que jogaram o jogo com suas respectivas pontuações. --conluido
 """
 
 import turtle
@@ -31,7 +31,7 @@ from main import Score
 
 carro = path('car.gif')
 pecas = list(range(32)) * 2
-estado = {'marca': None}
+estado = {'marca': None, 'segunda': False, "bloqueado": False}
 escondido = [True] * 64
 toques = 0
 game = {"state": False}
@@ -58,6 +58,19 @@ mudar_facil = turtle.Turtle()
 mudar_facil.teleport(-100,-40)
 mudar_difi = turtle.Turtle()
 mudar_difi.teleport(100,-40)
+
+jogadores = {"p1": {
+    "score":0,
+    "toques": 0,
+    "nome": configuracoes["username"]
+},
+    "p2": {
+        "score": 0,
+        "toques": 0,
+        "nome": configuracoes["usernamep2"]
+    }
+}
+jogador_atual = "p1"
 
 score = Score("test.json")
 def letras(ind):
@@ -109,40 +122,54 @@ def coordenadas(contador):
     return (contador % 8 ) * 50 -200, (contador //8) * 50 -200
 def toque(x, y):
     """Atualiza a marcação e as peças escondidas com base no clique."""
+    global toques, jogador_atual
+    if estado["bloqueado"]:
+        """Evitar clique durante a transição"""
+        return
     posicao = indice(x, y) if configuracoes["dificuldade"]=="facil" else indice_4(x,y)
     marca = estado['marca']
-    global toques
     toques+=1
-    print(toques)
-    if (marca is None or marca == posicao or (pecas[marca] != pecas[posicao] if configuracoes["dificuldade"]=="dificil" else pecas_4_4[marca] != pecas_4_4[posicao])):
-        estado['marca'] = posicao
+    jogadores[jogador_atual]["toques"]+=1
+    if posicao==estado["marca"]:
+        return
+    if marca is None:
+        estado["marca"] = posicao
+        return
+    estado["segunda"] = posicao
+    if configuracoes["dificuldade"]=="facil":
+        acerto = pecas_4_4[estado["segunda"]]==pecas_4_4[marca]
     else:
-        if configuracoes["dificuldade"]=="dificil":
-            escondido[posicao] = False
-            escondido[marca] = False
-            estado['marca'] = None
-        else:
-            escondido_4_4[posicao] = False
+        acerto = pecas[estado["segunda"]]==pecas[marca]
+    if acerto:
+        if configuracoes["dificuldade"] == "facil":
+            escondido_4_4[estado["segunda"]] = False
             escondido_4_4[marca] = False
-            estado['marca'] = None
+        else:
+            escondido[estado["segunda"]] = False
+            escondido[marca] = False
+        estado["marca"]=None
+        estado["segunda"] = None
+        jogadores[jogador_atual]["toques"]+=1
+    else:
+        if configuracoes["p2"]:
+            estado["bloqueado"] = True
+            turtle.ontimer(mostrar_pecas_devagar, 700)
+            if jogador_atual=="p1":
+                jogador_atual="p2"
+            else:
+                jogador_atual="p1"
+        else:
+            estado["bloqueado"] = True
+            turtle.ontimer(mostrar_pecas_devagar, 700)
 
-# def digitar_username(x,y):
-#     global username
-#     username = turtle.textinput("Username", "Digite seu username: ")
-#     if username=="":
-#         username= None
-
+def mostrar_pecas_devagar():
+    """Função utilizada para fazer delay para que a segunda peça possa ser mostrada"""
+    estado["marca"] = None
+    estado["segunda"] = None
+    estado["bloqueado"] = False
 
 def init():
     global username
-    # turtle.up()
-    # turtle.goto(0,80)
-    # turtle.write("Bem vindo ao\njogo da memoria", font=('Arial', 18, 'normal'), align="Center")
-    # turtle.teleport(0,40)
-    # turtle.write("Digite seu username:", font=('Arial', 14, 'normal'), align="Center")
-    # turtle.teleport(0,30)
-    # turtle.showturtle()
-    # turtle.onclick(digitar_username)
     turtle.clear()
     turtle.up()
     turtle.goto(0, 120)
@@ -153,6 +180,8 @@ def init():
     turtle.goto(0, 60)
     
     t_username.teleport(0,60)
+
+    """Verificação para diferença na aparencia do username"""
     if configuracoes["p2"]==False:
         t_username.clear()
         t_username.write(f"[ {configuracoes['username'] if configuracoes["username"]!=None else ""} ]", align="center", font=("Arial", 14, "bold"))
@@ -163,22 +192,6 @@ def init():
     turtle.goto(0, 40)
     turtle.showturtle()
     turtle.onclick(digitar_username)
-    # if configuracoes["username"] is not None  if configuracoes["p2"]== False else configuracoes["username"] is not None and configuracoes["usernamep2"] is not None:
-    #     teste_de_validcao = Score("test.json")
-    #     if teste_de_validcao.existe_usuario(configuracoes["username"]) or configuracoes["usernamep2"]==configuracoes["username"] or teste_de_validcao.existe_usuario(configuracoes["usernamep2"]) if configuracoes["p2"] else None:
-    #         mensagens_avisos.clear()
-    #         mensagens_avisos.write("Ja existe um usuario com esse nome!", font=('Arial', 14, 'normal'), align="Center")
-    #         t_username.clear()
-    #         if teste_de_validcao.existe_usuario(configuracoes["username"]):
-    #             configuracoes["username"] = None 
-    #         elif configuracoes["username"]==configuracoes["usernamep2"]:
-    #             configuracoes["username"] = None 
-    #             configuracoes["usernamep2"] = None 
-    #         else:
-    #             configuracoes["usernamep2"]== None
-    #         turtle.update()
-    #     else:
-    #         mensagens_avisos.clear()
 
     turtle.goto(-100, 10)
     turtle.write("1 Jogador", align="center", font=("Arial", 14, "normal"))
@@ -198,8 +211,6 @@ def init():
     turtle.goto(0, -90)
     turtle.write("INICIAR JOGO", align="center", font=("Arial", 16, "bold"))
     turtle.onclick(init_game)
-    # Associação dos cliques
-    # turtle.onclick(digitar_username, 1)
 
 
 def digitar_username(x,y):
@@ -210,6 +221,7 @@ def digitar_username(x,y):
     if configuracoes["username"]=="":
         configuracoes["username"] = None
     else:
+        jogadores["p1"]["nome"] = configuracoes["username"]
         t_username.clear()
     if configuracoes["dificuldade"]==None:
         if configuracoes["p2"]:
@@ -231,15 +243,7 @@ def digitar_username(x,y):
             )
             configuracoes["username"] = None
             return
-                # t_username.clear()
-                # if teste_de_validcao.existe_usuario(configuracoes["username"]):
-                #     configuracoes["username"] = None 
-                # elif configuracoes["username"]==configuracoes["usernamep2"]:
-                #     configuracoes["username"] = None 
-                #     configuracoes["usernamep2"] = None 
-                # else:
-                #     configuracoes["usernamep2"]== None
-                #turtle.update()
+                
         else:
             mensagens_avisos.clear()
     else:
@@ -269,6 +273,7 @@ def digitar_username_p2():
     if configuracoes["usernamep2"]=="":
         configuracoes["usernamep2"] = None
     else:
+        jogadores["p2"]["nome"] = configuracoes["usernamep2"]
         t_username.clear()
     if configuracoes["dificuldade"]==None:
         if configuracoes["username"]==configuracoes["usernamep2"]:
@@ -297,13 +302,27 @@ def digitar_username_p2():
     
 
 def init_game(x,y):
-    if configuracoes["username"] and configuracoes["dificuldade"]!=None:
-        game["state"] = True
-        turtle.onscreenclick(toque)
+    global estado,toques,jogador_atual
+    estado = {"marca": None, "segunda": None, "bloqueado": False}
+    toques = 0
+    jogador_atual = "p1"
+    if not configuracoes["p2"]:
+        if configuracoes["username"] and configuracoes["dificuldade"]!=None:
+            game["state"] = True
+            turtle.onscreenclick(None)
+            turtle.onscreenclick(toque)
+        else:
+            mensagens_avisos.clear()
+            mensagens_avisos.write("complete todas as configuraçoes", font=('Arial', 14, 'normal'), align="Center")
+            turtle.update()
     else:
-        mensagens_avisos.clear()
-        mensagens_avisos.write("complete todas as configuraçoes", font=('Arial', 14, 'normal'), align="Center")
-        turtle.update()
+        if configuracoes["username"] and configuracoes["dificuldade"]!=None and configuracoes["usernamep2"]:
+            game["state"] = True
+            turtle.onscreenclick(toque)
+        else:
+            mensagens_avisos.clear()
+            mensagens_avisos.write("complete todas as configuraçoes", font=('Arial', 14, 'normal'), align="Center")
+            turtle.update()
 
 def mudar_modo_de_jogador_p1(x,y):
     configuracoes["p2"] = False
@@ -320,7 +339,6 @@ def mudar_difi_facil(x,y):
     configuracoes["dificuldade"] = "facil"
     validar_usuario_completo("username")
     validar_usuario_completo("usernamep2")
-    score.mostra_scores()
     print("Dificuldade alterada para \033[0;32mfacil\033[m")
     return
 def mudar_difi_difi(x,y):
@@ -351,17 +369,36 @@ def desenhar():
                 if escondido[contador]:
                     x, y = coordenadas(contador)
                     quadrado(x, y)
-        marca = estado['marca']
-        if marca is not None and (escondido[marca] if configuracoes["dificuldade"]=="dificil" else escondido_4_4[marca]):
-            x, y = coordenadas(marca) if configuracoes["dificuldade"]=="dificil" else coordenadas_4(marca)
-            turtle.up()
-            turtle.goto(x + 2, y)
-            turtle.color('black')
-            turtle.write(letras(pecas_4_4[marca]) if configuracoes["dificuldade"]=="facil" else pecas[marca], font=('Arial', 30, 'normal'))
+
+        for clique in ["marca", "segunda"]:
+            pos = estado[clique]
+            if pos is not None:
+                if configuracoes["dificuldade"] == "facil":
+                    if escondido_4_4[pos]:
+                        x, y = coordenadas_4(pos)
+                        turtle.up()
+                        turtle.goto(x + 20, y + 20)
+                        turtle.write(letras(pecas_4_4[pos]), font=('Arial', 30, 'normal'))
+                else:
+                    if escondido[pos]:
+                        x, y = coordenadas(pos)
+                        turtle.up()
+                        turtle.goto(x + 10, y)
+                        turtle.write(pecas[pos], font=('Arial', 20, 'normal'))
         if not any(escondido_4_4) if configuracoes["dificuldade"]=="facil" else not any(escondido): 
             game["state"] = False
             game_over()
             return
+        if configuracoes["p2"]:
+            mensg_player = turtle.Turtle()
+            mensg_player.up()
+            mensg_player.goto(0, 170)
+            mensg_player.color("blue")
+            mensg_player.write(
+                f"Vez de: {jogadores[jogador_atual]['nome']}",
+                align="center",
+                font=("Arial", 14, "bold")
+            )
         turtle.update()
         turtle.ontimer(desenhar, 100)
     else:
@@ -371,19 +408,39 @@ def desenhar():
 
 def game_over():
     turtle.clear()
-    turtle.goto(-120,0)
-    score.add_user({"nome": configuracoes["username"], "score": toques, "dificuldade": configuracoes["dificuldade"]})
+    turtle.goto(-120,50)
+    if not configuracoes["p2"]:
+        score.add_user({"nome": configuracoes["username"], "score": jogadores["p1"]["toques"], "dificuldade": configuracoes["dificuldade"]})
+    else:
+        score.add_user({"nome": configuracoes["username"], "score": jogadores["p1"]["toques"], "dificuldade": configuracoes["dificuldade"]})
+        score.add_user({"nome": configuracoes["usernamep2"], "score": jogadores["p2"]["toques"], "dificuldade": configuracoes["dificuldade"]})
     turtle.write("FIM DE JOGO", font=('Arial', 30, 'normal'))
     ranking = turtle.Turtle()
-    ranking.teleport(-140,-50)
+    ranking.teleport(-160,-50)
     ranking.showturtle()
-    ranking.write("ver o ranking", font=('Arial', 18, 'normal'))
-    ranking.teleport(-100,-50)
+    ranking.write("ver o ranking", font=('Arial', 16, 'normal'))
+    mudar_p1.teleport(-100,20)
+    if not configuracoes["p2"]:
+        mudar_p1.write(f"Score - {jogadores['p1']["nome"]}: {jogadores['p1']["toques"]} toques", font=('Arial', 12, 'normal'))
+    else:
+        mudar_p1.write(f"Score - {jogadores['p1']["nome"]}: {jogadores['p1']["toques"]} toques\nScore - {jogadores['p2']["nome"]}: {jogadores['p2']["toques"]} toques", font=('Arial', 12, 'normal'))
     ranking.onclick(ver_ranking)
+    mensagens_avisos.showturtle()
+    mensagens_avisos.teleport(40,-50)
+    mensagens_avisos.pencolor("black")
+    mensagens_avisos.write("ver sua posição", font=('Arial', 16, 'normal'))
+    mensagens_avisos.onclick(mostrar_posicao)
     turtle.update()
     turtle.ontimer(game_over, 100)
-def ver_ranking(z,y):
+def ver_ranking(x,y):
     score.mostra_scores()
+
+def mostrar_posicao(x,y):
+    if not configuracoes["p2"]:
+        score.mostra_posicao(configuracoes["username"], jogadores["p1"]["toques"], configuracoes["dificuldade"])
+    else:
+        score.mostra_posicao(configuracoes["username"], jogadores["p1"]["toques"], configuracoes["dificuldade"])
+        score.mostra_posicao(configuracoes["usernamep2"], jogadores["p2"]["toques"], configuracoes["dificuldade"])
 random.shuffle(pecas)
 random.shuffle(pecas_4_4)
 turtle.setup(420, 420, 370, 0)
