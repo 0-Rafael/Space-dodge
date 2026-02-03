@@ -28,7 +28,7 @@ import random
 from freegames import path
 from main import Score
 
-
+cont = 2;
 carro = path('car.gif')
 pecas = list(range(32)) * 2
 estado = {'marca': None, 'segunda': False, "bloqueado": False}
@@ -349,6 +349,15 @@ def mudar_difi_difi(x,y):
     return
 def desenhar():
     """Desenha a imagem e as peças."""
+    def playercolor(player):
+        vez = player
+        if vez == "p1":
+            color = 'blue'
+        else:
+            color = 'red'
+        return color
+
+
     global game
     if game['state']:
         for n in turtle.turtles():
@@ -393,7 +402,7 @@ def desenhar():
             mensg_player = turtle.Turtle()
             mensg_player.up()
             mensg_player.goto(0, 170)
-            mensg_player.color("blue")
+            mensg_player.color(playercolor(jogador_atual))
             mensg_player.write(
                 f"Vez de: {jogadores[jogador_atual]['nome']}",
                 align="center",

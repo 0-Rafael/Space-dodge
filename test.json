@@ -8,5 +8,15 @@
         "nome": "b",
         "score": 32,
         "dificuldade": "facil"
+    },
+    {
+        "nome": "Igord\u00e3o",
+        "score": 28,
+        "dificuldade": "facil"
+    },
+    {
+        "nome": "Matheuzinho",
+        "score": 9,
+        "dificuldade": "facil"
     }
 ]
