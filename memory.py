@@ -13,7 +13,7 @@ Desafios:
 1. Contar e imprimir quantos cliques ocorrem. --concluido
 2. Reduzir o número de peças para um tabuleiro 4x4. --concluido
 3. Detectar quando todas as peças forem reveladas. --concluido
-4. Centralizar peças de um único dígito.
+4. Centralizar peças de um único dígito. --concluido
 5. Usar letras em vez de números. --concluido
 6. Identificar jogador em cada rodada. Qual o nome do jogador que vai iniciar um jogo? --concluido
 7. Armazenar jogador e suas pontuações em arquivo. Ao final do jogo, armazenar em arquivo
@@ -347,16 +347,11 @@ def mudar_difi_difi(x,y):
     validar_usuario_completo("usernamep2")
     print("Dificuldade alterada para \033[0;31mdificil\033[m")
     return
-def desenhar():
-    """Desenha a imagem e as peças."""
-    def playercolor(player):
-        vez = player
-        if vez == "p1":
-            color = 'blue'
-        else:
-            color = 'red'
-        return color
 
+
+def desenhar():
+    def playercolor(player):
+        return 'blue' if player == "p1" else 'red'
 
     global game
     if game['state']:
@@ -367,8 +362,9 @@ def desenhar():
         turtle.goto(0, 0)
         turtle.shape(carro)
         turtle.stamp()
-        global toques
-        if configuracoes["dificuldade"]=="facil":
+
+        # Desenha os quadrados escondidos (tampas)
+        if configuracoes["dificuldade"] == "facil":
             for contador in range(16):
                 if escondido_4_4[contador]:
                     x, y = coordenadas_4(contador)
@@ -377,8 +373,9 @@ def desenhar():
             for contador in range(64):
                 if escondido[contador]:
                     x, y = coordenadas(contador)
-                    quadrado(x, y)
+                    quadrado(x, y)  # Nota: mantive (x, y) padrão aqui
 
+        # Desenha o conteúdo das peças reveladas
         for clique in ["marca", "segunda"]:
             pos = estado[clique]
             if pos is not None:
@@ -386,28 +383,34 @@ def desenhar():
                     if escondido_4_4[pos]:
                         x, y = coordenadas_4(pos)
                         turtle.up()
-                        turtle.goto(x + 20, y + 20)
-                        turtle.write(letras(pecas_4_4[pos]), font=('Arial', 30, 'normal'))
+                        # Quadrado 4x4 tem 100px. Metade = 50.
+                        # Y + 25 ajusta a altura da fonte para ficar visualmente no meio
+                        turtle.goto(x + 50, y + 25)
+                        turtle.write(letras(pecas_4_4[pos]), align="center", font=('Arial', 40, 'bold'))
                 else:
                     if escondido[pos]:
                         x, y = coordenadas(pos)
                         turtle.up()
-                        turtle.goto(x + 10, y)
-                        turtle.write(pecas[pos], font=('Arial', 20, 'normal'))
-        if not any(escondido_4_4) if configuracoes["dificuldade"]=="facil" else not any(escondido): 
+                        # Quadrado 8x8 tem 50px. Metade = 25.
+                        # Y + 10 ajusta a base da fonte para não ficar colada no chão
+                        turtle.goto(x + 25, y + 10)
+                        turtle.write(pecas[pos], align="center", font=('Arial', 20, 'bold'))
+
+        # Verifica fim de jogo
+        if (configuracoes["dificuldade"] == "facil" and not any(escondido_4_4)) or (
+                configuracoes["dificuldade"] != "facil" and not any(escondido)):
             game["state"] = False
             game_over()
             return
+
+        # Mostra de quem é a vez
         if configuracoes["p2"]:
-            mensg_player = turtle.Turtle()
-            mensg_player.up()
-            mensg_player.goto(0, 170)
-            mensg_player.color(playercolor(jogador_atual))
-            mensg_player.write(
-                f"Vez de: {jogadores[jogador_atual]['nome']}",
-                align="center",
-                font=("Arial", 14, "bold")
-            )
+            msg = turtle.Turtle()
+            msg.up()
+            msg.goto(0, 170)
+            msg.color(playercolor(jogador_atual))
+            msg.write(f"Vez de: {jogadores[jogador_atual]['nome']}", align="center", font=("Arial", 14, "bold"))
+
         turtle.update()
         turtle.ontimer(desenhar, 100)
     else:
