@@ -467,7 +467,7 @@ def mostrar_posicao(x,y):
 
 random.shuffle(pecas)
 random.shuffle(pecas_4_4)
-turtle.setup(420, 420, 370, 0)
+turtle.setup(410, 403, 370, 0)
 turtle.addshape(carro)
 turtle.hideturtle()
 turtle.tracer(False)

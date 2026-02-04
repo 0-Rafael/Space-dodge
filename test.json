@@ -16,12 +16,22 @@
     },
     {
         "nome": "Matheuzinho",
-        "score": 9,
+        "score": 1,
         "dificuldade": "facil"
     },
     {
         "nome": "Andre",
         "score": 524,
+        "dificuldade": "dificil"
+    },
+    {
+        "nome": "andre",
+        "score": 142,
+        "dificuldade": "dificil"
+    },
+    {
+        "nome": "pedro",
+        "score": 144,
         "dificuldade": "dificil"
     }
 ]

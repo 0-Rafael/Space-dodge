@@ -64,13 +64,13 @@ class Score():
             linha = ""
             if i < len(facil):
                 if i==0:
-                    linha += f"\033[1;33m{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} pts)\033[m"
+                    linha += f"\033[1;33m{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} chances)\033[m"
                 elif i==1:
-                    linha += f"\033[0;37m{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} pts)\033[m"
+                    linha += f"\033[0;37m{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} chances)\033[m"
                 elif i==2:
-                    linha += f"\033[0;33m{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} pts)\033[m"
+                    linha += f"\033[0;33m{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} chances)\033[m"
                 else:
-                    linha += f"{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} pts)"
+                    linha += f"{i+1}° - {facil[i]["nome"]} ({facil[i]["score"]} chances)"
 
             else:
                 linha += " " * 30
@@ -78,13 +78,13 @@ class Score():
             linha += "\t"
             if i < len(dificil):
                 if i==0:
-                    linha += f"\033[1;33m{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} pts)\033[m"
+                    linha += f"\033[1;33m{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} chances)\033[m"
                 elif i==1:
-                    linha += f"\033[0;37m{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} pts)\033[m"
+                    linha += f"\033[0;37m{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} chances)\033[m"
                 elif i==2:
-                    linha += f"\033[0;33m{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} pts)\033[m"
+                    linha += f"\033[0;33m{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} chances)\033[m"
                 else:
-                    linha += f"{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} pts)"
+                    linha += f"{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} chances)"
 
             print(linha)
     def mostra_posicao(self, jogador, dificuldade):
