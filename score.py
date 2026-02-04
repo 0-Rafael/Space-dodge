@@ -87,10 +87,13 @@ class Score():
                     linha += f"{i+1}° - {dificil[i]['nome']} ({dificil[i]['score']} pts)"
 
             print(linha)
-    def mostra_posicao(self, jogador, toques, dificuldade):
-        for n in range(len(self.conteudo)):
-            if self.conteudo[n]["nome"]==jogador and self.conteudo[n]["score"]==toques and self.conteudo[n]["dificuldade"]==dificuldade:
+    def mostra_posicao(self, jogador, dificuldade):
+        ranking = [n for n in self.conteudo if n["dificuldade"]==dificuldade]
+        ranking.sort(key=lambda usuario: usuario["score"])
+        for n in range (len(ranking)):
+            if ranking[n]["nome"]==jogador:
                 print(f"O jogador: {jogador} esta na {n+1}° posição")
+                return
 
 
 

@@ -18,5 +18,10 @@
         "nome": "Matheuzinho",
         "score": 9,
         "dificuldade": "facil"
+    },
+    {
+        "nome": "Andre",
+        "score": 524,
+        "dificuldade": "dificil"
     }
 ]

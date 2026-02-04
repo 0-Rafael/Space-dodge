@@ -26,9 +26,8 @@ que jogaram o jogo com suas respectivas pontuações. --conluido
 import turtle
 import random
 from freegames import path
-from main import Score
+from score import Score
 
-cont = 2;
 carro = path('car.gif')
 pecas = list(range(32)) * 2
 estado = {'marca': None, 'segunda': False, "bloqueado": False}
@@ -37,10 +36,6 @@ toques = 0
 game = {"state": False}
 pecas_4_4 = list(range(8)) * 2
 escondido_4_4 = [True] * 16
-username = None
-modo_de_jogo = None
-dificuldade = None
-p1 = None
 configuracoes = {"username": None, "dificuldade": None, "p1": True, "p2": False, "usernamep2": None}
 
 t_username= turtle.Turtle()
@@ -62,12 +57,14 @@ mudar_difi.teleport(100,-40)
 jogadores = {"p1": {
     "score":0,
     "toques": 0,
-    "nome": configuracoes["username"]
+    "nome": configuracoes["username"],
+    "partesDescobertas": 0
 },
     "p2": {
         "score": 0,
         "toques": 0,
-        "nome": configuracoes["usernamep2"]
+        "nome": configuracoes["usernamep2"],
+        "partesDescobertas": 0
     }
 }
 jogador_atual = "p1"
@@ -129,10 +126,11 @@ def toque(x, y):
     posicao = indice(x, y) if configuracoes["dificuldade"]=="facil" else indice_4(x,y)
     marca = estado['marca']
     toques+=1
-    jogadores[jogador_atual]["toques"]+=1
     if posicao==estado["marca"]:
+        """Evita clique na mesma peça"""
         return
     if marca is None:
+        """Primeiro clique"""
         estado["marca"] = posicao
         return
     estado["segunda"] = posicao
@@ -141,6 +139,7 @@ def toque(x, y):
     else:
         acerto = pecas[estado["segunda"]]==pecas[marca]
     if acerto:
+        jogadores[jogador_atual]["toques"]+=2
         if configuracoes["dificuldade"] == "facil":
             escondido_4_4[estado["segunda"]] = False
             escondido_4_4[marca] = False
@@ -149,8 +148,10 @@ def toque(x, y):
             escondido[marca] = False
         estado["marca"]=None
         estado["segunda"] = None
-        jogadores[jogador_atual]["toques"]+=1
+        jogadores[jogador_atual]["toques"]+=2
+        jogadores[jogador_atual]["partesDescobertas"]+=1
     else:
+        jogadores[jogador_atual]["toques"]+=2
         if configuracoes["p2"]:
             estado["bloqueado"] = True
             turtle.ontimer(mostrar_pecas_devagar, 700)
@@ -169,7 +170,6 @@ def mostrar_pecas_devagar():
     estado["bloqueado"] = False
 
 def init():
-    global username
     turtle.clear()
     turtle.up()
     turtle.goto(0, 120)
@@ -214,11 +214,13 @@ def init():
 
 
 def digitar_username(x,y):
+    """Função para mostrar caixa de texto para digitação do username do usuario"""
     configuracoes["username"] = turtle.textinput("Username", "Digite seu username: ")
     turtle.clear()
     turtle.update()
     t_username.clear()
     if configuracoes["username"]=="":
+        """Verifica se o usuario não digitou e nome e apenas clicou enter"""
         configuracoes["username"] = None
     else:
         jogadores["p1"]["nome"] = configuracoes["username"]
@@ -226,6 +228,7 @@ def digitar_username(x,y):
     if configuracoes["dificuldade"]==None:
         if configuracoes["p2"]:
             if configuracoes["username"]==configuracoes["usernamep2"]:
+                """Verifica se o p1 e p2 tem o mesmo nome"""
                 mensagens_avisos.clear()
                 mensagens_avisos.write(
                 "Players não podem ter o mesmo nome",
@@ -235,6 +238,7 @@ def digitar_username(x,y):
                 configuracoes["username"]= None
                 return
         if score.existe_nome(configuracoes["username"]):
+            """Verifica se ja existe um usuario cadastrado com o mesmo nome em qualquer dificuldade"""
             mensagens_avisos.clear()
             mensagens_avisos.write(
                 "Já existe um usuário com esse nome!",
@@ -257,6 +261,7 @@ def validar_usuario_completo(player):
         configuracoes[player],
         configuracoes["dificuldade"]
     ):
+        """faz a verificação se ja existe o usuario a partir da dificuldade"""
         mensagens_avisos.clear()
         mensagens_avisos.write(
             "Usuário já jogou nessa dificuldade!",
@@ -308,6 +313,7 @@ def init_game(x,y):
     jogador_atual = "p1"
     if not configuracoes["p2"]:
         if configuracoes["username"] and configuracoes["dificuldade"]!=None:
+            """Verificação se o usuario ja preencheou todos os campos"""
             game["state"] = True
             turtle.onscreenclick(None)
             turtle.onscreenclick(toque)
@@ -317,6 +323,7 @@ def init_game(x,y):
             turtle.update()
     else:
         if configuracoes["username"] and configuracoes["dificuldade"]!=None and configuracoes["usernamep2"]:
+            """Verificação se o usuario ja preencheou todos os campos"""
             game["state"] = True
             turtle.onscreenclick(toque)
         else:
@@ -356,6 +363,7 @@ def desenhar():
     global game
     if game['state']:
         for n in turtle.turtles():
+            """Apaga o texto e esconde todas as tartarugas criadas"""
             n.clear()
             n.hideturtle()
         turtle.clear()
@@ -365,11 +373,13 @@ def desenhar():
 
         # Desenha os quadrados escondidos (tampas)
         if configuracoes["dificuldade"] == "facil":
+            """Dsenha o jogo 4x4"""
             for contador in range(16):
                 if escondido_4_4[contador]:
                     x, y = coordenadas_4(contador)
                     quadrado_4(x, y)
         else:
+            """Dsenha o jogo 4x4"""
             for contador in range(64):
                 if escondido[contador]:
                     x, y = coordenadas(contador)
@@ -431,11 +441,12 @@ def game_over():
     ranking.teleport(-160,-50)
     ranking.showturtle()
     ranking.write("ver o ranking", font=('Arial', 16, 'normal'))
-    mudar_p1.teleport(-100,20)
+    mudar_p1.teleport(-150,-20)
     if not configuracoes["p2"]:
+        mudar_p1.teleport(-100, 20)
         mudar_p1.write(f"Score - {jogadores['p1']["nome"]}: {jogadores['p1']["toques"]} toques", font=('Arial', 12, 'normal'))
     else:
-        mudar_p1.write(f"Score - {jogadores['p1']["nome"]}: {jogadores['p1']["toques"]} toques\nScore - {jogadores['p2']["nome"]}: {jogadores['p2']["toques"]} toques", font=('Arial', 12, 'normal'))
+        mudar_p1.write(f"Score - {jogadores['p1']["nome"]}: Descobriu {jogadores["p1"]["partesDescobertas"]} peças \ncom {jogadores['p1']["toques"]} toques\nScore - {jogadores['p2']["nome"]}: Descobriu {jogadores["p2"]["partesDescobertas"]} peças com \n{jogadores['p2']["toques"]} toques", font=('Arial', 12, 'normal'))
     ranking.onclick(ver_ranking)
     mensagens_avisos.showturtle()
     mensagens_avisos.teleport(40,-50)
@@ -449,10 +460,12 @@ def ver_ranking(x,y):
 
 def mostrar_posicao(x,y):
     if not configuracoes["p2"]:
-        score.mostra_posicao(configuracoes["username"], jogadores["p1"]["toques"], configuracoes["dificuldade"])
+        score.mostra_posicao(configuracoes["username"],  configuracoes["dificuldade"])
     else:
-        score.mostra_posicao(configuracoes["username"], jogadores["p1"]["toques"], configuracoes["dificuldade"])
-        score.mostra_posicao(configuracoes["usernamep2"], jogadores["p2"]["toques"], configuracoes["dificuldade"])
+        score.mostra_posicao(configuracoes["username"],  configuracoes["dificuldade"])
+        score.mostra_posicao(configuracoes["usernamep2"], configuracoes["dificuldade"])
+
+
 random.shuffle(pecas)
 random.shuffle(pecas_4_4)
 turtle.setup(420, 420, 370, 0)
