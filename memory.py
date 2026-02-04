@@ -148,7 +148,6 @@ def toque(x, y):
             escondido[marca] = False
         estado["marca"]=None
         estado["segunda"] = None
-        jogadores[jogador_atual]["toques"]+=2
         jogadores[jogador_atual]["partesDescobertas"]+=1
     else:
         jogadores[jogador_atual]["toques"]+=2
